@@ -1,0 +1,3 @@
+/workspaces/drunken-sailor/build/CMakeFiles/rebuild_cache.dir
+/workspaces/drunken-sailor/build/CMakeFiles/edit_cache.dir
+/workspaces/drunken-sailor/build/CMakeFiles/drunkensailor.dir

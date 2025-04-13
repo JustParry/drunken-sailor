@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/game.h
+string
+-
+vector
+-
+
+/workspaces/drunken-sailor/src/main.cpp
+game.h
+/workspaces/drunken-sailor/src/game.h
+iostream
+-
+vector
+-
+string
+-
+
