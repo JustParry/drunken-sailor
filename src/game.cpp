@@ -22,27 +22,12 @@ void hit(std::vector<std::string>& deck, std::vector<std::string>& hand, int& ac
     deck.pop_back();
     hand.push_back(card);
     // check if the card is an ace
-    if (card == "A") {
+    std::cout << card << std::endl;
+    if (card.find("A") != std::string::npos) {
         ace ++;    
     }
 
     // tells user the card has been dealt
-}
-
-// doubles down if funds are available
-void doubleDown(std::vector<std::string>& deck, std::vector<std::string>& hand, int& bet, int& aces) {
-
-    // check if the player has enough funds to double down
-    if (bet > 0) {
-        // double the bet
-        bet *= 2;
-        std::cout << "Doubled down. New bet: " << bet << std::endl;
-
-        // deal one more card
-        hit(deck, hand, aces);
-    } else {
-        std::cout << "Not enough funds to double down." << std::endl;
-    }
 }
 
 // splits hand if possible
@@ -80,12 +65,14 @@ bool checkWin(std::vector<std::string>& dealerHand, std::vector<std::string>& pl
     // check if the player wins or loses
     int playerScore = 0;
     int dealerScore = 0;
-
+    int playerAces = 0;
+    int dealerAces = 0;
     // calculate the score for the player
     for (const auto& card : playerHand) {
-        if (card == "A") {
+        if (card.find("A") != std::string::npos) {
             playerScore += 11;
-        } else if (card == "K" || card == "Q" || card == "J") {
+            playerAces += 1;
+        } else if (card.find("K") || card.find("Q") || card.find("J") != std::string::npos) {
             playerScore += 10;
         } else {
             playerScore += std::stoi(card);
@@ -94,30 +81,40 @@ bool checkWin(std::vector<std::string>& dealerHand, std::vector<std::string>& pl
 
     // calculate the score for the dealer
     for (const auto& card : dealerHand) {
-        if (card == "A") {
+        if (card.find("A") != std::string::npos) {
             dealerScore += 11;
-        } else if (card == "K" || card == "Q" || card == "J") {
+            dealerAces += 1;
+        } else if (card.find("K") || card.find("Q") || card.find("J") != std::string::npos) {
             dealerScore += 10;
         } else {
             dealerScore += std::stoi(card);
         }
     }
-
+    for (int i = 0; i < playerAces; i++) {
+        if (playerScore > 21) {
+            playerScore -= 10;
+        }
+    }
+    for (int i = 0; i < dealerAces; i++) {
+        if (dealerScore > 21) {
+            dealerScore -= 10;
+        }
+    }
     // check if the player wins or loses
-    if (playerScore > 21) {
+    if (checkBust(playerHand)) {
         std::cout << "Player busts. Dealer wins." << std::endl;
         return false;
-    } else if (dealerScore > 21) {
+    } else if (checkBust(dealerHand)) {
         std::cout << "Dealer busts. Player wins." << std::endl;
         return true;
     } else if (playerScore > dealerScore) {
         std::cout << "Player wins." << std::endl;
         return true;
-    } else if (playerScore < dealerScore) {
+    }else if (playerScore < dealerScore) {
         std::cout << "Dealer wins." << std::endl;
         return false;
     } else {
-        std::cout << "Push. No one wins." << std::endl;
+        std::cout << "Dealer wins on ties." << std::endl;
         return false;
     }
 }
@@ -128,17 +125,17 @@ bool checkBust(std::vector<std::string>& hand) {
     int savedAces = 0;
     // calculate the score for the hand
     for (const auto& card : hand) {
-        if (card == "A") {
+        if (card.find("A") != std::string::npos) {
             score += 11;
             savedAces+= 1;
         }
-        else if (card == "a") {
-            score += 11;
-        }
-        else if (card == "K" || card == "Q" || card == "J") {
+        else if (card.find("K") || card.find("Q") || card.find("J") != std::string::npos) {
             score += 10;
         } else {
-            score += std::stoi(card);
+            // convert the card to an integer and add it to the score
+            std::vector<char> v(card.begin(), card.end());
+            std::string num(v[0], v[1]);
+            score += std::stoi(num);
         }
     }
 
@@ -153,9 +150,12 @@ bool checkBust(std::vector<std::string>& hand) {
         for (int i = 0; i < savedAces; i++) {
             score -= 10;
             if (score <= 21) {
-                std::cout << "Hand does not bust." << std::endl;
                 return false;
             }
+        }
+        if (score > 21) {
+            std::cout << "Hand busts." << std::endl;
+            return true;
         }
     }
     return false;

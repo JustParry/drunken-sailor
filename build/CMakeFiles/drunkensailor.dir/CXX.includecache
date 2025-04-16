@@ -12,6 +12,16 @@ string
 vector
 -
 
+/workspaces/drunken-sailor/src/game.cpp
+game.h
+/workspaces/drunken-sailor/src/game.h
+iostream
+-
+algorithm
+-
+random
+-
+
 /workspaces/drunken-sailor/src/main.cpp
 game.h
 /workspaces/drunken-sailor/src/game.h

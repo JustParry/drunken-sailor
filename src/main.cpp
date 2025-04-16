@@ -16,6 +16,14 @@ std::vector<std::string> old_deck = {
     "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS", "KS", "AS"
 };
 
+// Variables
+std::vector<std::string> playerHand = {};
+std::vector<std::string> dealerHand = {};
+std::vector<std::string> splitHand = {};    
+int playerAces = 0;
+int splitAces = 0;
+int dealerAces = 0;
+int dealerScore = 0;
 int main() {
     // introduces the game!
     char answer;
@@ -51,13 +59,13 @@ int main() {
     // Main game loop
     while (gameRunning) {
         // Resets the hands and aces
-        std::vector<std::string> playerHand = {};
-        std::vector<std::string> dealerHand = {};
-        std::vector<std::string> splitHand = {};    
-        int playerAces = 0;
-        int splitAces = 0;
-        int dealerAces = 0;
-        int dealerScore = 0;
+        playerHand.clear();
+        dealerHand.clear();
+        splitHand.clear();    
+        playerAces = 0;
+        splitAces = 0;
+        dealerAces = 0;
+        dealerScore = 0;
 
         // Shows wallet as well as other options
         std::cout << "You have $" << playerFunds << ". How much would you like to bet? (any integer 1 - " << playerFunds << ")" << std::endl;
@@ -90,6 +98,8 @@ int main() {
         while (playerTurn) {
             if (checkBust(playerHand)) {
                 std::cout << "You busted! Dealer wins." << std::endl;
+                playerBusted = true;
+                playerTurn = false;
                 break;
             }
             std::cout << "Your hand: ";
@@ -117,9 +127,18 @@ int main() {
 
                 case 'D':
                 case 'd':
-                    doubleDown(deck, playerHand, bet, playerAces);
-                    playerTurn = false;
-                    break;
+                    if (playerFunds < bet) {
+                        std::cout << "Not enough funds to double down." << std::endl;
+                        break;
+                    }
+                    else {
+                        std::cout << "Doubling down." << std::endl;
+                        playerFunds -= bet;
+                        bet *= 2;
+                        hit(deck, playerHand, playerAces);
+                        playerTurn = false;
+                        break;
+                    }
 
                 case 'P':
                 case 'p':
@@ -173,46 +192,34 @@ int main() {
                     std::cout << "Invalid option. Please enter H, S, D, P, or Q." << std::endl;
                     break;
             }
+        }
 
-            // Dealer's turn
-            if (playerBusted) {
-                continue;
-            }
-            else{
-                while (!checkBust(dealerHand)) {
-                    std::cout << "Dealer's hand: ";
-                    for (const auto& card : dealerHand) {
-                        std::cout << card << " ";
-                    }
-                    std::cout << std::endl;
-                    if (dealerScore < 17) {
-                        hit(deck, dealerHand, dealerAces);
-                        dealerScore = 0;
-                        for (const auto& card : dealerHand) {
-                            if (card == "A") {
-                                dealerScore += 11;
-                            } else if (card == "K" || card == "Q" || card == "J") {
-                                dealerScore += 10;
-                            } else {
-                                dealerScore += std::stoi(card);
-                            }
-                        }
-                        if (dealerScore > 21 && dealerAces > 0) {
-                            dealerScore -= 10;
-                            dealerAces--;
-                        }
-                    }
+        // Dealer's turn
+        if (!playerBusted) {
+            while (!checkBust(dealerHand)) {
+                std::cout << "Dealer's hand: ";
+                for (const auto& card : dealerHand) {
+                    std::cout << card << " ";
+                }
+                std::cout << std::endl;
+                if (dealerScore < 17) {
+                    hit(deck, dealerHand, dealerAces);
+                
+                }
+                else {
+                    std::cout << "Dealer stands." << std::endl;
+                    break;
                 }
             }
+        }
 
-            // Sees who wins!!!
-            if (checkWin(dealerHand, playerHand)) {
-                std::cout << "You win!" << std::endl;
-                playerFunds += bet * 2;
-            } 
-            else {
-                std::cout << "Dealer wins!" << std::endl;
-            }
+        // Sees who wins!!!
+        if (checkWin(dealerHand, playerHand)) {
+            std::cout << "You win!" << std::endl;
+            playerFunds += bet * 2;
+        } 
+        else {
+            std::cout << "Dealer wins!" << std::endl;
         }
     }
 }

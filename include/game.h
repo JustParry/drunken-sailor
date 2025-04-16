@@ -11,9 +11,6 @@ void shuffleDeck(std::vector<std::string>& deck);
 // deals cards
 void hit(std::vector<std::string>& deck, std::vector<std::string>& hand, int& ace);
 
-// doubles down if funds are available
-void doubleDown(std::vector<std::string>& deck, std::vector<std::string>& hand, int& bet, int& aces);
-
 // checks if the player can split, then splits if able
 std::vector<std::string>& split(std::vector<std::string>& hand, int& bet, int&aces1, int&aces2);
 
